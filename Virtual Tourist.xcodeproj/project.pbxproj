@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA757BB822011A5D0082216C /* CoreDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA757BB722011A5D0082216C /* CoreDataController.swift */; };
 		FAF2423921FF9FD700930D7B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF2423821FF9FD700930D7B /* AppDelegate.swift */; };
 		FAF2423B21FF9FD700930D7B /* InitialMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF2423A21FF9FD700930D7B /* InitialMapViewController.swift */; };
 		FAF2423E21FF9FD700930D7B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAF2423C21FF9FD700930D7B /* Main.storyboard */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FA757BB722011A5D0082216C /* CoreDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataController.swift; sourceTree = "<group>"; };
 		FAF2423521FF9FD700930D7B /* Virtual Tourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Virtual Tourist.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAF2423821FF9FD700930D7B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FAF2423A21FF9FD700930D7B /* InitialMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialMapViewController.swift; sourceTree = "<group>"; };
@@ -67,7 +69,6 @@
 				FAF2424221FF9FD900930D7B /* Assets.xcassets */,
 				FAF2424421FF9FD900930D7B /* LaunchScreen.storyboard */,
 				FAF2424721FF9FD900930D7B /* Info.plist */,
-				FAF2423F21FF9FD700930D7B /* Virtual_Tourist.xcdatamodeld */,
 			);
 			path = "Virtual Tourist";
 			sourceTree = "<group>";
@@ -84,7 +85,9 @@
 		FAF2425021FFA49600930D7B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				FAF2423F21FF9FD700930D7B /* Virtual_Tourist.xcdatamodeld */,
 				FAF2425121FFA4B500930D7B /* ImageCollectionViewCell.swift */,
+				FA757BB722011A5D0082216C /* CoreDataController.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -162,6 +165,7 @@
 			files = (
 				FAF2423B21FF9FD700930D7B /* InitialMapViewController.swift in Sources */,
 				FAF2425221FFA4B500930D7B /* ImageCollectionViewCell.swift in Sources */,
+				FA757BB822011A5D0082216C /* CoreDataController.swift in Sources */,
 				FAF2424F21FFA25900930D7B /* PinDetailViewController.swift in Sources */,
 				FAF2424121FF9FD700930D7B /* Virtual_Tourist.xcdatamodeld in Sources */,
 				FAF2423921FF9FD700930D7B /* AppDelegate.swift in Sources */,
