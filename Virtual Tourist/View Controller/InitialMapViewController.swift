@@ -31,54 +31,98 @@ class InitialMapViewController: UIViewController {
     }
 
     @IBAction func editButtonClicked(_ sender: Any) {
-        deleteLabelShowing = !deleteLabelShowing
-            DispatchQueue.main.async {
-                self.view.layoutIfNeeded()
-                UIView.animate(withDuration: 0.2, animations: {
-                    self.labelBottomConstraint.priority = UILayoutPriority(rawValue: self.deleteLabelShowing ? 751 : 251)
-                    self.view.layoutIfNeeded()
-                })
+        
+        if deleteLabelShowing {
+            animateDeleteLabel()
+        } else {
+            if galeriesMap.annotations.isEmpty {
+                let alert = UIAlertController(title: "Oops.",
+                                              message: "Please add a pin to the map before trying to edit it.",
+                                              preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            } else {
+                animateDeleteLabel()
             }
+        }
     }
     
     func loadSavedPins(){
         let request: NSFetchRequest<Pin> = Pin.fetchRequest()
         if let result = try? dataController.viewContext.fetch(request) {
             for p in result{
-             addLocationToMap(location: CLLocation(latitude: p.latitude, longitude: p.longitude))
+                geocodeLocation(location: CLLocation(latitude: p.latitude, longitude: p.longitude), completion: { placemark in
+                    self.addLocationToMap(placemark)
+                })
+                
             }
         }
     }
     
-    func deleteSavedPin(){
+    func deleteSavedPin(pin: Pin){
+        dataController.viewContext.delete(pin)
+        do{
+            try dataController.viewContext.save()
+        }catch {
+            print("fuckMyAss")
+        }
         
+        
+//        if let index = user.historicStock.index(where: { (dto) -> Bool in
+//            dto.idStock == stock.idStock
+//        }) {
+
     }
     
-    func addLocationToMap(location: CLLocation){
+    func animateDeleteLabel(){
+        deleteLabelShowing = !deleteLabelShowing
+        DispatchQueue.main.async {
+            self.view.layoutIfNeeded()
+            UIView.animate(withDuration: 0.2, animations: {
+                self.labelBottomConstraint.priority = UILayoutPriority(rawValue: self.deleteLabelShowing ? 751 : 251)
+                self.view.layoutIfNeeded()
+            })
+        }
+    }
+    
+    func geocodeLocation(location: CLLocation,
+                         completion: @escaping (CLPlacemark) -> Void) {
         let coder = CLGeocoder()
         coder.reverseGeocodeLocation(location) { placemarks, err in
             
-            guard let arrPlaces = placemarks, let currentPlace = arrPlaces.first else { return }
+            if err != nil {
+                print("fuck")
+                return
+            }
             
-            let mapAnotation = MKPointAnnotation()
-            mapAnotation.coordinate = location.coordinate
-            mapAnotation.title = currentPlace.locality ?? "City Unknown"
-            
-            //TODO IMPROVE CORE DATA IMPLEMENTATION
+            guard let arrPlaces = placemarks, let place = arrPlaces.first else { return }
+            completion(place)
+        }
+    }
+    
+    func savePinFromLocation(_ placemark: CLPlacemark){
+        if let location = placemark.location {
             let pin = Pin(context: self.dataController.viewContext)
-            pin.city = currentPlace.locality ?? "City Unknown"
+            pin.city = placemark.locality ?? "City Unknown"
             pin.latitude = location.coordinate.latitude
             pin.longitude = location.coordinate.longitude
             
             try? self.dataController.viewContext.save()
             print("SAVED")
+        }
+    }
+    
+    func addLocationToMap(_ placemark: CLPlacemark){
+        if let location = placemark.location {
+            let mapAnotation = MKPointAnnotation()
+            mapAnotation.coordinate = location.coordinate
+            mapAnotation.title = placemark.locality ?? "City Unknown"
             
             DispatchQueue.main.async {
                 self.galeriesMap.addAnnotation(mapAnotation)
             }
         }
     }
-    
 }
 
 extension InitialMapViewController: MKMapViewDelegate {
@@ -92,10 +136,54 @@ extension InitialMapViewController: UIGestureRecognizerDelegate {
         let pinCoordinates = galeriesMap.convert(pressLocation, toCoordinateFrom: galeriesMap)
         let location = CLLocation(latitude: pinCoordinates.latitude, longitude: pinCoordinates.longitude)
         
-        addLocationToMap(location: location)
+        geocodeLocation(location: location) { placemark in
+            self.savePinFromLocation(placemark)
+            self.addLocationToMap(placemark)
+        }
         
         return true
     }
     
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        
+        let reuseId = "pin"
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
+        
+        if pinView == nil {
+            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            pinView?.animatesDrop = true
+            pinView?.pinTintColor = .red
+            //pinView?.canShowCallout = true
+            //pinView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+        }
+        else {
+            pinView?.annotation = annotation
+        }
+        return pinView
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        if !deleteLabelShowing {
+            performSegue(withIdentifier: "PinToDetailSegue", sender: nil)
+        } else {
+            
+            guard let dLocation = view.annotation?.coordinate else { return }
+            
+            let request: NSFetchRequest<Pin> = Pin.fetchRequest()
+            let latitudePredicate = NSPredicate(format: "latitude = \(dLocation.latitude)")
+            let longitudePredicate = NSPredicate(format: "latitude = \(dLocation.longitude)")
+            
+            let predicates = [latitudePredicate, longitudePredicate]
+            request.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+            if let result = try? dataController.viewContext.fetch(request).first {
+                if let resultPin = result {
+                    deleteSavedPin(pin: resultPin)
+                    DispatchQueue.main.async {
+                        mapView.removeAnnotation(view.annotation!)
+                    }
+                }
+            }
+        }
+    }
 }
 
