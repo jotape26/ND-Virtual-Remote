@@ -19,6 +19,7 @@ class InitialMapViewController: UIViewController {
     
     var deleteLabelShowing = false
     var dataController: CoreDataController!
+    var selectedAnnotation: MKAnnotation?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -164,7 +165,11 @@ extension InitialMapViewController: UIGestureRecognizerDelegate {
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         if !deleteLabelShowing {
-            performSegue(withIdentifier: "PinToDetailSegue", sender: nil)
+            self.selectedAnnotation = view.annotation!
+            
+            let vc = storyboard?.instantiateViewController(withIdentifier: "PinDetailViewController") as! PinDetailViewController
+            vc.currentPin = selectedAnnotation
+            navigationController?.pushViewController(vc, animated: true)
         } else {
             
             guard let dLocation = view.annotation?.coordinate else { return }
