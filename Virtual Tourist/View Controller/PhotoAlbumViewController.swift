@@ -1,5 +1,5 @@
 //
-//  PinDetailViewController.swift
+//  PhotoAlbumViewController.swift
 //  Virtual Tourist
 //
 //  Created by João Leite on 28/01/19.
@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class PinDetailViewController: UIViewController {
+class PhotoAlbumViewController: UIViewController {
     
     var currentPin: MKAnnotation!
     @IBOutlet weak var detailMap: MKMapView!
@@ -27,7 +27,7 @@ class PinDetailViewController: UIViewController {
 
 }
 
-extension PinDetailViewController: MKMapViewDelegate {
+extension PhotoAlbumViewController: MKMapViewDelegate {
     
     func populateMap(){
         self.detailMap.addAnnotation(currentPin)
@@ -37,7 +37,7 @@ extension PinDetailViewController: MKMapViewDelegate {
     
 }
 
-//extension PinDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+//extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
 //    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 //        <#code#>
 //    }

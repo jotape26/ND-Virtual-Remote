@@ -1,5 +1,5 @@
 //
-//  InitialMapViewController.swift
+//  TravelLocationViewController.swift
 //  Virtual Tourist
 //
 //  Created by João Leite on 28/01/19.
@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class InitialMapViewController: UIViewController {
+class TravelLocationViewController: UIViewController {
 
     @IBOutlet weak var mapViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var labelBottomConstraint: NSLayoutConstraint!
@@ -126,25 +126,7 @@ class InitialMapViewController: UIViewController {
     }
 }
 
-extension InitialMapViewController: MKMapViewDelegate {
-    
-}
-
-extension InitialMapViewController: UIGestureRecognizerDelegate {
-    
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        let pressLocation = gestureRecognizer.location(in: galeriesMap)
-        let pinCoordinates = galeriesMap.convert(pressLocation, toCoordinateFrom: galeriesMap)
-        let location = CLLocation(latitude: pinCoordinates.latitude, longitude: pinCoordinates.longitude)
-        
-        geocodeLocation(location: location) { placemark in
-            self.savePinFromLocation(placemark)
-            self.addLocationToMap(placemark)
-        }
-        
-        return true
-    }
-    
+extension TravelLocationViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         
         let reuseId = "pin"
@@ -167,7 +149,7 @@ extension InitialMapViewController: UIGestureRecognizerDelegate {
         if !deleteLabelShowing {
             self.selectedAnnotation = view.annotation!
             
-            let vc = storyboard?.instantiateViewController(withIdentifier: "PinDetailViewController") as! PinDetailViewController
+            let vc = storyboard?.instantiateViewController(withIdentifier: "PhotoAlbumViewController") as! PhotoAlbumViewController
             vc.currentPin = selectedAnnotation
             navigationController?.pushViewController(vc, animated: true)
         } else {
@@ -189,6 +171,22 @@ extension InitialMapViewController: UIGestureRecognizerDelegate {
                 }
             }
         }
+    }
+}
+
+extension TravelLocationViewController: UIGestureRecognizerDelegate {
+    
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        let pressLocation = gestureRecognizer.location(in: galeriesMap)
+        let pinCoordinates = galeriesMap.convert(pressLocation, toCoordinateFrom: galeriesMap)
+        let location = CLLocation(latitude: pinCoordinates.latitude, longitude: pinCoordinates.longitude)
+        
+        geocodeLocation(location: location) { placemark in
+            self.savePinFromLocation(placemark)
+            self.addLocationToMap(placemark)
+        }
+        
+        return true
     }
 }
 

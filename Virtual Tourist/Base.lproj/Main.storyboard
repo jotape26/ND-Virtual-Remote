@@ -29,7 +29,7 @@
         <!--Virtual Tourist-->
         <scene sceneID="HcF-3r-Nqx">
             <objects>
-                <viewController id="Zp3-GC-B6q" customClass="InitialMapViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Zp3-GC-B6q" customClass="TravelLocationViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1zp-kf-zC0">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -66,6 +66,7 @@
                         <viewLayoutGuide key="safeArea" id="FAn-4S-QUa"/>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="Lwt-Ct-bFQ">
+                        <barButtonItem key="backBarButtonItem" title="Back" id="Kfd-IC-6xW"/>
                         <barButtonItem key="rightBarButtonItem" title="Edit" id="0SD-p9-hBN">
                             <connections>
                                 <action selector="editButtonClicked:" destination="Zp3-GC-B6q" id="BW7-rD-4Ty"/>
@@ -85,10 +86,10 @@
             </objects>
             <point key="canvasLocation" x="152.80000000000001" y="109.29535232383809"/>
         </scene>
-        <!--Pin Detail View Controller-->
+        <!--Photo Album View Controller-->
         <scene sceneID="MrG-l6-Prm">
             <objects>
-                <viewController id="Woe-6i-Vri" customClass="PinDetailViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PhotoAlbumViewController" id="Woe-6i-Vri" customClass="PhotoAlbumViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="W9T-CV-XUU">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -149,6 +150,10 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Gik-5w-9JM"/>
                     </view>
+                    <connections>
+                        <outlet property="detailMap" destination="bU4-w0-vGN" id="1dQ-A7-dH0"/>
+                        <outlet property="photosCollection" destination="p5s-A7-uDe" id="Tob-JY-xKf"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="B81-Lf-FwR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

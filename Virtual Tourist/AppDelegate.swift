@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //MARK: - Core Data Init
         dataController.load()
         let navigationController = window?.rootViewController as! UINavigationController
-        let mapView = navigationController.topViewController as! InitialMapViewController
+        let mapView = navigationController.topViewController as! TravelLocationViewController
         mapView.dataController = dataController
         
         return true
