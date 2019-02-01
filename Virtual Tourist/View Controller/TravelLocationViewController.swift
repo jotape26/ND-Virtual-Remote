@@ -20,6 +20,7 @@ class TravelLocationViewController: UIViewController {
     var deleteLabelShowing = false
     var dataController: CoreDataController!
     var selectedAnnotation: MKAnnotation?
+    var pinsArray: [Pin] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,28 +52,34 @@ class TravelLocationViewController: UIViewController {
     func loadSavedPins(){
         let request: NSFetchRequest<Pin> = Pin.fetchRequest()
         if let result = try? dataController.viewContext.fetch(request) {
-            for p in result{
-                geocodeLocation(location: CLLocation(latitude: p.latitude, longitude: p.longitude), completion: { placemark in
-                    self.addLocationToMap(placemark)
-                })
-                
-            }
+            self.pinsArray = result
+            populateMap()
         }
     }
     
-    func deleteSavedPin(pin: Pin){
+    func deleteSavedPin(pin: Pin) {
         dataController.viewContext.delete(pin)
         do{
             try dataController.viewContext.save()
         }catch {
             print("fuckMyAss")
         }
-        
-        
-//        if let index = user.historicStock.index(where: { (dto) -> Bool in
-//            dto.idStock == stock.idStock
-//        }) {
 
+    }
+    
+    func populateMap() {
+        for p in pinsArray {
+            geocodeLocation(location: CLLocation(latitude: p.latitude, longitude: p.longitude)) { mark in
+                
+                let mapAnotation = MKPointAnnotation()
+                mapAnotation.coordinate = CLLocationCoordinate2D(latitude: p.latitude, longitude: p.longitude)
+                mapAnotation.title = mark.locality ?? "City Unknown"
+                
+                DispatchQueue.main.async {
+                    self.galeriesMap.addAnnotation(mapAnotation)
+                }
+            }
+        }
     }
     
     func animateDeleteLabel(){
@@ -152,6 +159,7 @@ extension TravelLocationViewController: MKMapViewDelegate {
             
             let vc = storyboard?.instantiateViewController(withIdentifier: "PhotoAlbumViewController") as! PhotoAlbumViewController
             vc.currentPin = selectedAnnotation
+            vc.dataController = dataController
             navigationController?.pushViewController(vc, animated: true)
         } else {
             
