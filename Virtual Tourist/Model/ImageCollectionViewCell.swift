@@ -14,7 +14,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var activity: UIActivityIndicatorView!
     
     func setPhoto(photo: Photo){
-        
+        imageOutlet.image = nil
         if photo.photoData != nil {
             DispatchQueue.main.async {
                 self.imageOutlet.image = UIImage(data: photo.photoData!)

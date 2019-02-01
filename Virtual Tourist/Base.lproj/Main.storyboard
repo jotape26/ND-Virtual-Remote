@@ -86,7 +86,7 @@
             </objects>
             <point key="canvasLocation" x="152.80000000000001" y="109.29535232383809"/>
         </scene>
-        <!--Photo Album View Controller-->
+        <!--Title-->
         <scene sceneID="MrG-l6-Prm">
             <objects>
                 <viewController storyboardIdentifier="PhotoAlbumViewController" id="Woe-6i-Vri" customClass="PhotoAlbumViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
@@ -111,17 +111,17 @@
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ImageCell" id="2eS-Er-cHg" customClass="ImageCollectionViewCell" customModule="Virtual_Tourist" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="136" height="125"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                                            <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="136" height="125"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Jau-wt-4O6">
-                                                    <rect key="frame" x="54" y="52.5" width="20" height="20"/>
+                                                    <rect key="frame" x="58" y="52.5" width="20" height="20"/>
                                                 </activityIndicatorView>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="vsc-WY-QFl">
-                                                    <rect key="frame" x="0.0" y="0.0" width="128" height="125"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="136" height="125"/>
                                                 </imageView>
                                             </subviews>
                                         </view>
@@ -133,7 +133,7 @@
                                             <constraint firstAttribute="bottom" secondItem="vsc-WY-QFl" secondAttribute="bottom" id="v3u-vG-Zsk"/>
                                             <constraint firstItem="vsc-WY-QFl" firstAttribute="top" secondItem="2eS-Er-cHg" secondAttribute="top" id="zgN-MN-zf9"/>
                                         </constraints>
-                                        <size key="customSize" width="128" height="128"/>
+                                        <edgeInsets key="layoutMargins" top="1" left="1" bottom="1" right="1"/>
                                         <connections>
                                             <outlet property="activity" destination="Jau-wt-4O6" id="88a-Sf-fZE"/>
                                             <outlet property="imageOutlet" destination="vsc-WY-QFl" id="sBI-Yo-xIc"/>
@@ -154,6 +154,13 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Gik-5w-9JM"/>
                     </view>
+                    <navigationItem key="navigationItem" title="Title" id="nmh-MF-sLf">
+                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="Yh2-Jf-fDE">
+                            <connections>
+                                <action selector="refreshButtonClicked:" destination="Woe-6i-Vri" id="C9X-iN-Fsv"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="detailMap" destination="bU4-w0-vGN" id="1dQ-A7-dH0"/>
                         <outlet property="photosCollection" destination="p5s-A7-uDe" id="Tob-JY-xKf"/>

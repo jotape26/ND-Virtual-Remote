@@ -46,7 +46,7 @@ class PhotosService: NSObject {
                                                               secret: photo["secret"] as? String ?? "",
                                                               server: photo["server"] as? String ?? "",
                                                               farm: photo["farm"] as? Int ?? 0))
-                        } while selectedPhotos.count < 20 || selectedPhotos.count == photosList.count
+                        } while selectedPhotos.count < 21 || selectedPhotos.count == photosList.count
                         
                         completion(selectedPhotos)
                     }

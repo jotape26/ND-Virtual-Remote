@@ -26,16 +26,22 @@ class PhotoAlbumViewController: UIViewController {
         photosCollection.delegate = self
         photosCollection.dataSource = self
         
-        let flow = UICollectionViewFlowLayout()
-        flow.minimumLineSpacing = 1.0
-        flow.minimumInteritemSpacing = 1.0
-        flow.itemSize = CGSize(width: 100, height: 100)
-        photosCollection.collectionViewLayout = flow
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        let test = view.frame.width/3 - 3
+        layout.itemSize = CGSize(width: test, height: test)
+        layout.minimumInteritemSpacing = 0.1
+        layout.minimumLineSpacing = 3
+        
+        photosCollection.collectionViewLayout = layout
         detailMap.delegate = self
         detailMap.camera.altitude = CLLocationDistance(exactly: 5000.0)!
         title = currentPin.title!!
         findPin()
         populateMap()
+    }
+    
+    @IBAction func refreshButtonClicked(_ sender: Any) {
+        resetPin()
     }
     
     func findPin(){
@@ -116,18 +122,38 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         cell.setPhoto(photo: photos[indexPath.row])
         return cell
     }
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+       return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height/3)
         
-        let noOfCellsInRow = 3
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selected = photos[indexPath.row]
+        photos.remove(at: indexPath.row)
+        saveDelete(photo: selected)
+        DispatchQueue.main.async {
+             self.photosCollection.reloadData()
+        }
+    }
+    
+    func saveDelete(photo: Photo){
+        dataController.viewContext.delete(photo)
         
-        let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
+        try? dataController.viewContext.save()
+        print("deleted photo")
+    }
+    
+    func resetPin(){
+        for p in photos{
+            dataController.viewContext.delete(p)
+        }
+        photos.removeAll()
+        self.photosCollection.reloadData()
         
-        let totalSpace = flowLayout.sectionInset.left
-            + flowLayout.sectionInset.right
-            + (flowLayout.minimumInteritemSpacing * CGFloat(noOfCellsInRow - 1))
+        try? dataController.viewContext.save()
+        print("Images deleted from Pin")
         
-        let size = Int((collectionView.bounds.width - totalSpace) / CGFloat(noOfCellsInRow))
+        searchPhotos()
         
-        return CGSize(width: size, height: size)
     }
 }
