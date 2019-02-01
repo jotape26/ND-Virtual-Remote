@@ -14,20 +14,20 @@ class PhotosService: NSObject {
     let const = Constants()
     
     func requestPhotos(location: CLLocation,
-                       completion: @escaping ([FlickrPhoto])->Void){
+                       completion: @escaping ([FlickrPhoto])->Void,
+                       failure: @escaping()->Void){
         
         let lat = location.coordinate.latitude
         let lon = location.coordinate.longitude
         
         let url = URL(string: const.BASEURL + const.METHOD + const.FORMAT + const.APIKEY + "&lat=\(lat)&lon=\(lon)" + const.SEARCHRADIUS)!
-        print(url.absoluteString)
         
         let request = URLRequest(url: url)
         let session = URLSession.shared
 
         _ = session.dataTask(with: request) { (data, res, err) in
             if err != nil {
-                print("fuck")
+                failure()
                 return
             }
             
@@ -37,6 +37,11 @@ class PhotosService: NSObject {
                 if let rootObject = responseJson!["photos"] as? [String: Any] {
                     if let photosList = rootObject["photo"] as? [[String: Any]] {
                         
+                        // IF ARRAY IS EMPTY
+                        if photosList.isEmpty {
+                            failure()
+                            return
+                        }
                         var selectedPhotos: [FlickrPhoto] = []
                         
                         repeat {
@@ -49,14 +54,15 @@ class PhotosService: NSObject {
                         } while selectedPhotos.count < 21 || selectedPhotos.count == photosList.count
                         
                         completion(selectedPhotos)
-                    }
-                }
-            }
+                    } else { failure() }
+                } else { failure () }
+            } else { failure() }
         }.resume()
     }
     
     func downloadPhotoData(photo: Photo,
-                           completion: @escaping(UIImage)->Void){
+                           completion: @escaping(UIImage)->Void,
+                           failure: @escaping()->()){
         
         if let url = photo.flickrUrl {
             let request = URLRequest(url: url)
@@ -64,7 +70,7 @@ class PhotosService: NSObject {
             
             _ = session.dataTask(with: request, completionHandler: { (data, res, err) in
                 if err != nil {
-                    print("fuck download")
+                    failure()
                     return
                 }
                 
@@ -73,7 +79,7 @@ class PhotosService: NSObject {
                     completion(finalImage!)
                 }
             }).resume()
-        }
+        } else { failure() }
     }
     
     

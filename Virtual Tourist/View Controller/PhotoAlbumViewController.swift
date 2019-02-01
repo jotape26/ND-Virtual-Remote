@@ -16,6 +16,7 @@ class PhotoAlbumViewController: UIViewController {
     var pin: Pin!
     @IBOutlet weak var detailMap: MKMapView!
     @IBOutlet weak var photosCollection: UICollectionView!
+    @IBOutlet weak var lbInfo: UILabel!
     var dataController: CoreDataController!
     var photos: [Photo] = []
     
@@ -48,8 +49,6 @@ class PhotoAlbumViewController: UIViewController {
         let request: NSFetchRequest<Pin> = Pin.fetchRequest()
         let latitudePredicate = NSPredicate(format: "latitude = \(currentPin.coordinate.latitude)")
         let longitudePredicate = NSPredicate(format: "latitude = \(currentPin.coordinate.longitude)")
-        print(latitudePredicate)
-        print(longitudePredicate)
         
         let predicates = [latitudePredicate, longitudePredicate]
         request.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
@@ -64,6 +63,9 @@ class PhotoAlbumViewController: UIViewController {
     func searchPhotos(){
         //CHECK FIRST CORE DATA
         //IF PIN FOUND, FIND PHOTOS
+        DispatchQueue.main.async {
+            self.lbInfo.text = "Loading photos..."
+        }
         let request: NSFetchRequest<Photo> = Photo.fetchRequest()
         request.predicate = NSPredicate(format: "pin = %@", pin)
         request.sortDescriptors = [NSSortDescriptor(key: "position", ascending: true)]
@@ -86,9 +88,14 @@ class PhotoAlbumViewController: UIViewController {
                         self.photos.append(photo)
                     }
                     try? self.dataController.viewContext.save()
-                    print("saved photos on coredata")
+                    print("DEBUG: Photos metadata downloaded. Reloading collection view to download the files.")
                     DispatchQueue.main.async {
                         self.photosCollection.reloadData()
+                    }
+                }, failure: {
+                    DispatchQueue.main.async {
+                        self.lbInfo.text = "There was an error requesting images to Flickr. Please verify your connection and try again later."
+                        
                     }
                 })
             }
@@ -98,7 +105,7 @@ class PhotoAlbumViewController: UIViewController {
     func savePhotoToCoreData(photo: Photo) {
         try? self.dataController.viewContext.save()
         self.photosCollection.reloadData()
-        print("SAVED")
+        print("DEBUG: Photo saved in Core Data")
     }
 }
 
@@ -114,6 +121,8 @@ extension PhotoAlbumViewController: MKMapViewDelegate {
 
 extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        lbInfo.isHidden = photos.isEmpty ? false : true
         return photos.count
     }
     
@@ -123,7 +132,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         return cell
     }
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-       return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height/3)
+        return CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height/3)
         
     }
     
@@ -132,7 +141,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         photos.remove(at: indexPath.row)
         saveDelete(photo: selected)
         DispatchQueue.main.async {
-             self.photosCollection.reloadData()
+            self.photosCollection.reloadData()
         }
     }
     
@@ -140,7 +149,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         dataController.viewContext.delete(photo)
         
         try? dataController.viewContext.save()
-        print("deleted photo")
+        print("DEBUG: Photo deleted from Core Data")
     }
     
     func resetPin(){
@@ -151,7 +160,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         self.photosCollection.reloadData()
         
         try? dataController.viewContext.save()
-        print("Images deleted from Pin")
+        print("DEBUG: Pin reset complete. Downloading new pictures.")
         
         searchPhotos()
         

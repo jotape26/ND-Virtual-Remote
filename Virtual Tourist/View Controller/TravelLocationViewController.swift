@@ -11,11 +11,11 @@ import MapKit
 import CoreData
 
 class TravelLocationViewController: UIViewController {
-
-    @IBOutlet weak var mapViewBottomConstraint: NSLayoutConstraint!
-    @IBOutlet weak var labelBottomConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var lbHeight: NSLayoutConstraint!
     @IBOutlet weak var galeriesMap: MKMapView!
     @IBOutlet var longPressGesture: UILongPressGestureRecognizer!
+    @IBOutlet weak var lbEdit: UILabel!
     
     var deleteLabelShowing = false
     var dataController: CoreDataController!
@@ -59,11 +59,7 @@ class TravelLocationViewController: UIViewController {
     
     func deleteSavedPin(pin: Pin) {
         dataController.viewContext.delete(pin)
-        do{
-            try dataController.viewContext.save()
-        }catch {
-            print("fuckMyAss")
-        }
+        try? dataController.viewContext.save()
 
     }
     
@@ -87,7 +83,7 @@ class TravelLocationViewController: UIViewController {
         DispatchQueue.main.async {
             self.view.layoutIfNeeded()
             UIView.animate(withDuration: 0.2, animations: {
-                self.labelBottomConstraint.priority = UILayoutPriority(rawValue: self.deleteLabelShowing ? 751 : 251)
+                self.lbHeight.constant = self.deleteLabelShowing ? 50 : 0
                 self.view.layoutIfNeeded()
             })
         }
@@ -99,7 +95,10 @@ class TravelLocationViewController: UIViewController {
         coder.reverseGeocodeLocation(location) { placemarks, err in
             
             if err != nil {
-                print("fuck")
+                let alert = UIAlertController(title: "Unknown Location",
+                                              message: "Sorry, we couldn't find a location for the region you selected. Please choose another region", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+                self.present(alert, animated: true, completion: nil)
                 return
             }
             
@@ -116,7 +115,7 @@ class TravelLocationViewController: UIViewController {
             pin.longitude = location.coordinate.longitude
             
             try? self.dataController.viewContext.save()
-            print("SAVED")
+            print("DEBUG: New pin saved in Core Data")
         }
     }
     

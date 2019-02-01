@@ -21,16 +21,17 @@ class ImageCollectionViewCell: UICollectionViewCell {
                 self.activity.stopAnimating()
             }
         } else {
-            PhotosService().downloadPhotoData(photo: photo) { image in
+            PhotosService().downloadPhotoData(photo: photo, completion: { image in
                 DispatchQueue.main.async {
                     photo.photoData = image.pngData()
                     try? photo.managedObjectContext?.save()
-                    print("saved image on coredata")
+                    print("DEBUG: Photo data downloaded and saved into Photo Core Data Object")
                     self.imageOutlet.image = image
-                    print("loaded image")
                     self.activity.stopAnimating()
                 }
-            }
+            }, failure: {
+                
+            })
         }
     }
 }
